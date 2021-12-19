@@ -1,0 +1,97 @@
+package com.example.razorpay;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+
+public class MainActivity extends AppCompatActivity implements PaymentResultListener {
+
+    private TextView txtPaymentStatus;
+    private Button btnPaynow;
+    private  EditText editAmount;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        txtPaymentStatus = findViewById(R.id.paymentStatus);
+        editAmount = findViewById(R.id.edit_amount);
+        btnPaynow = findViewById(R.id.btn_pay);
+
+
+        // Error install checkout in app resource
+        Checkout.preload(MainActivity.this);
+/*
+*       After type this code inlistner
+*       bulid gradle
+*          -> depencancy
+                ->   implementation 'com.razorpay:checkout:1.6.12'
+
+        <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />        *
+*
+*       */
+
+       btnPayNow.setOnClickListener(new View.OnClickListner(){
+
+           @Override
+           public void onClick(View View){
+
+               startpayment(Intege.parseInt(editAmount.getText().toString()));
+           }
+
+       });
+
+
+
+    }
+
+    public  void startpayment(int Amount){
+        Checkout  checkout = new Checkout();
+        // set id in razorpay
+        checkout.SetKeyID("");
+
+        try {
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name","Payment Process ");
+            jsonObject.put("description","Pay Amount");
+            jsonObject.put("theme color","#3399cc");
+            jsonObject.put("currency","INR");
+            jsonObject.put("Amount",Amount*100);
+
+            JSONObject retryObj = new  JSONObject();
+            retryObj.put("enabled", true);
+            retryObj.put("max_count", 4);
+            options.put("retry", retryObj);
+
+            checkout.open (MainActivity.this.jsonObject);
+
+
+
+        }catch (Exception e){
+
+           Toast.makeText(MainActivity.this, "Somthing Worng", Toast.LENGTH_SHORT).show();
+
+            
+        }
+
+
+    }
+
+    /*
+    *  after implment method
+    * @Override
+    * public  void onPaymentSuccess(String s) {
+
+        txtPaymentStatus.setText(s)
+      }
+     @Override
+    public  void onPaymentError(int i,String s) {
+
+        txtPaymentStatus.setText("Error"+s)
+      }
+
+    */
+
+}
